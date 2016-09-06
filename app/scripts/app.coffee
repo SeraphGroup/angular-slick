@@ -54,7 +54,7 @@ angular.module('slick', [])
       destroySlick = () ->
         $timeout(() ->
           slider = $(element)
-          slider.slick('unslick')
+          slider.unslick()
           slider.find('.slick-list').remove()
           slider
         )
@@ -66,21 +66,6 @@ angular.module('slick', [])
 
           customPaging = (slick, index) ->
             scope.customPaging({ slick: slick, index: index })
-
-          slider.on 'init', (sl) ->
-            scope.onInit() if attrs.onInit
-            if currentIndex?
-              sl.slideHandler(currentIndex)
-
-          slider.on 'afterChange', (event, slick, currentSlide, nextSlide) ->
-            scope.onAfterChange() if scope.onAfterChange
-
-            if currentIndex?
-              scope.$apply(->
-                currentIndex = currentSlide
-                scope.currentIndex = currentSlide
-              )
-
 
           slider.slick
             accessibility: scope.accessibility isnt "false"
@@ -124,7 +109,19 @@ angular.module('slick', [])
             nextArrow: if scope.nextArrow then $(scope.nextArrow) else undefined
 
 
+          slider.on 'init', (sl) ->
+            scope.onInit() if attrs.onInit
+            if currentIndex?
+              sl.slideHandler(currentIndex)
 
+          slider.on 'afterChange', (event, slick, currentSlide, nextSlide) ->
+            scope.onAfterChange() if scope.onAfterChange
+
+            if currentIndex?
+              scope.$apply(->
+                currentIndex = currentSlide
+                scope.currentIndex = currentSlide
+              )
 
           scope.$watch("currentIndex", (newVal, oldVal) ->
             if currentIndex? and newVal? and newVal != currentIndex
